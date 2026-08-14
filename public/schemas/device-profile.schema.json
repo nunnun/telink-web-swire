@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/nunnun/telink-web-swire/main/public/schemas/device-profile.schema.json",
+  "title": "Telink Web SWire device profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "name", "chip", "transport", "flash", "cpu", "read", "write"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema": { "const": "telink-web-swire-device-profile-v1" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "chip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "clockHz"],
+      "properties": {
+        "family": { "const": "tlsr826x" },
+        "clockHz": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baudRate", "readTimeoutMs", "highSpeedChunkBytes"],
+      "properties": {
+        "baudRate": { "type": "integer", "minimum": 1 },
+        "readTimeoutMs": { "type": "integer", "minimum": 1 },
+        "highSpeedChunkBytes": { "type": "integer", "minimum": 10, "multipleOf": 10 }
+      }
+    },
+    "flash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["size", "sectorSize", "pageSize"],
+      "properties": {
+        "size": { "$ref": "#/$defs/address" },
+        "sectorSize": { "$ref": "#/$defs/address" },
+        "pageSize": { "$ref": "#/$defs/address" },
+        "jedecIds": { "type": "array", "items": { "type": "string", "pattern": "^[0-9a-fA-F _:-]{6,}$" } }
+      }
+    },
+    "cpu": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stopRegister", "stopValue", "stopDurationMs", "resetRegister", "resetValue"],
+      "properties": {
+        "stopRegister": { "$ref": "#/$defs/address" },
+        "stopValue": { "$ref": "#/$defs/address" },
+        "stopDurationMs": { "type": "integer", "minimum": 1 },
+        "resetRegister": { "$ref": "#/$defs/address" },
+        "resetValue": { "$ref": "#/$defs/address" }
+      }
+    },
+    "read": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blockSize", "comparePasses", "retries"],
+      "properties": {
+        "blockSize": { "$ref": "#/$defs/address" },
+        "comparePasses": { "enum": [1, 2] },
+        "retries": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "write": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "defaultOffset", "allowedRanges", "protectedRanges", "verifyAttempts"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "defaultOffset": { "$ref": "#/$defs/address" },
+        "allowedRanges": { "type": "array", "items": { "$ref": "#/$defs/range" } },
+        "protectedRanges": { "type": "array", "items": { "$ref": "#/$defs/range" } },
+        "verifyAttempts": { "type": "integer", "minimum": 1 },
+        "firmwareChecks": { "type": "array", "items": { "$ref": "#/$defs/check" } },
+        "activationPatch": { "$ref": "#/$defs/activationPatch" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "enabled": { "const": true } }, "required": ["enabled"] },
+          "then": { "properties": { "allowedRanges": { "minItems": 1 } } }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "address": {
+      "oneOf": [
+        { "type": "integer", "minimum": 0, "maximum": 16777215 },
+        { "type": "string", "pattern": "^(0x[0-9a-fA-F]+|[0-9]+)$" }
+      ]
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "$ref": "#/$defs/address" },
+        "end": { "$ref": "#/$defs/address" },
+        "label": { "type": "string" }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["offset", "hex", "label"],
+      "properties": {
+        "offset": { "$ref": "#/$defs/address" },
+        "hex": { "type": "string", "pattern": "^[0-9a-fA-F _:-]+$" },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    },
+    "activationPatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["offset", "fromHex", "toHex", "label"],
+      "properties": {
+        "offset": { "$ref": "#/$defs/address" },
+        "fromHex": { "type": "string", "pattern": "^[0-9a-fA-F _:-]+$" },
+        "toHex": { "type": "string", "pattern": "^[0-9a-fA-F _:-]+$" },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

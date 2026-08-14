@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nunnun/telink-web-swire/main/public/schemas/device-profile.schema.json",
+  "schema": "telink-web-swire-device-profile-v1",
+  "id": "es-b01cw-bank-a",
+  "name": "ENDO ES-B01CW — inactive Bank A",
+  "description": "Writes only the proven Bank A application range. Bank B and device settings remain protected.",
+  "chip": {
+    "family": "tlsr826x",
+    "clockHz": 32000000
+  },
+  "transport": {
+    "baudRate": 576000,
+    "readTimeoutMs": 250,
+    "highSpeedChunkBytes": 60
+  },
+  "flash": {
+    "size": "0x80000",
+    "sectorSize": "0x1000",
+    "pageSize": "0x100",
+    "jedecIds": ["514013"]
+  },
+  "cpu": {
+    "stopRegister": "0x0602",
+    "stopValue": "0x05",
+    "stopDurationMs": 2000,
+    "resetRegister": "0x006f",
+    "resetValue": "0x22"
+  },
+  "read": {
+    "blockSize": "0x100",
+    "comparePasses": 2,
+    "retries": 5
+  },
+  "write": {
+    "enabled": true,
+    "defaultOffset": "0x000000",
+    "allowedRanges": [
+      { "start": "0x000000", "end": "0x034000", "label": "inactive Bank A application" }
+    ],
+    "protectedRanges": [
+      { "start": "0x034000", "end": "0x040000", "label": "Bank A reserved tail" },
+      { "start": "0x040000", "end": "0x076000", "label": "stock Bank B and reserved area" },
+      { "start": "0x076000", "end": "0x080000", "label": "MAC, Mesh keys, and persistent settings" }
+    ],
+    "verifyAttempts": 3,
+    "firmwareChecks": [
+      { "offset": "0x000008", "hex": "ff4e4c54", "label": "inactive FFNLT marker at image offset 8" }
+    ],
+    "activationPatch": {
+      "offset": "0x000008",
+      "fromHex": "ff",
+      "toHex": "4b",
+      "label": "change FFNLT to KNLT"
+    }
+  }
+}
