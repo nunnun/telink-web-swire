@@ -20,9 +20,11 @@ type Connection = {
   flash: Tlsr826xFlash;
 };
 
+export const dynamic = "force-static";
+
 const bundled = [
-  { path: "/profiles/tlsr826x-generic-512k.json", label: "TLSR826x · Generic 512 KiB" },
-  { path: "/profiles/es-b01cw-bank-a.json", label: "ENDO ES-B01CW · Bank A" },
+  { path: "profiles/tlsr826x-generic-512k.json", label: "TLSR826x · Generic 512 KiB" },
+  { path: "profiles/es-b01cw-bank-a.json", label: "ENDO ES-B01CW · Bank A" },
 ];
 
 const initialProfile = parseProfile(defaultProfileInput);

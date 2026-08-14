@@ -55,6 +55,9 @@ npm run dev
 Open `http://localhost:3000`, load or import a profile, then choose the serial
 port from the browser permission prompt.
 
+The `main` branch also deploys automatically to GitHub Pages at
+`https://nunnun.github.io/telink-web-swire/`.
+
 ## Device profiles
 
 Addresses in JSON can be decimal integers or strings such as `"0x34000"`.
