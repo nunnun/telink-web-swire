@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { defaultProfileInput } from "../lib/default-profile.ts";
 import { parseProfile, validateWritePlan } from "../lib/profile.ts";
 
 async function fixture(name) {
@@ -10,6 +11,13 @@ async function fixture(name) {
 test("generic bundled profile is read-only", async () => {
   const profile = parseProfile(await fixture("tlsr826x-generic-512k.json"));
   assert.throws(() => validateWritePlan(profile, 0x1000, new Uint8Array(0x1234)), /read-only/);
+});
+
+test("client bootstrap profile matches the downloadable generic profile", async () => {
+  assert.deepEqual(
+    parseProfile(defaultProfileInput),
+    parseProfile(await fixture("tlsr826x-generic-512k.json")),
+  );
 });
 
 test("ES-B01CW profile requires the inactive marker", async () => {

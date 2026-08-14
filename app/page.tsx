@@ -12,7 +12,7 @@ import {
 import { SwireBus } from "@/lib/swire";
 import { bytesToHex, Tlsr826xFlash } from "@/lib/tlsr826x";
 import { getSerialApi, WebSerialTransport } from "@/lib/web-serial";
-import genericProfileJson from "@/public/profiles/tlsr826x-generic-512k.json";
+import { defaultProfileInput } from "@/lib/default-profile";
 
 type Connection = {
   transport: WebSerialTransport;
@@ -25,7 +25,7 @@ const bundled = [
   { path: "/profiles/es-b01cw-bank-a.json", label: "ENDO ES-B01CW · Bank A" },
 ];
 
-const initialProfile = parseProfile(genericProfileJson);
+const initialProfile = parseProfile(defaultProfileInput);
 
 function download(data: Uint8Array, filename: string) {
   const blob = new Blob([data as BlobPart], { type: "application/octet-stream" });
